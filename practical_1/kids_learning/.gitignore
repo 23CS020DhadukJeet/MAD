@@ -1,0 +1,45 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.melos_tool/
+
+# Builds
+build/
+flutter_export_environment.sh
+
+# Dependencies cache (don’t upload these)
+.pub/
+.pub-cache/
+
+# Android
+**/android/local.properties
+**/android/key.properties
+**/android/app/google-services.json
+*.jks
+*.keystore
+*.gradle
+gradle-wrapper.jar
+
+# iOS / macOS
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Pods/
+**/ios/Podfile.lock
+**/ios/.symlinks/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/macos/Pods/
+**/macos/Podfile.lock
+
+# Web
+lib/generated_plugin_registrant.dart
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Misc
+*.log
