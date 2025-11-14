@@ -123,7 +123,7 @@ class _AddEditGradeScreenState extends State<AddEditGradeScreen> {
             TextFormField(
               controller: _termCtrl,
               decoration: const InputDecoration(
-                labelText: 'Term/Semester (e.g., Summer 2025 or Winter 2025)',
+                labelText: 'Term/Semester (e.g., Sem-4 2025 or Sem-5 2025)',
               ),
             ),
             const SizedBox(height: 8),

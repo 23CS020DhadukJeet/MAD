@@ -9,55 +9,55 @@ class AssessmentComparisonChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final byCourse = <String, Map<String, Grade?>>{}; // course -> {Summer, Winter}
+    final byCourse = <String, Map<String, Grade?>>{}; // course -> {Sem-4, Sem-5}
     final courses = <String>{};
 
     for (final g in grades) {
       if (g.assessmentType != assessmentType) continue;
       final course = g.courseCode;
       final termLabel = (g.term ?? '').toLowerCase();
-      final isSummer = termLabel.contains('summer');
-      final isWinter = termLabel.contains('winter');
-      if (!isSummer && !isWinter) continue; // focus on Summer/Winter comparison
+      final isSem4 = termLabel.contains('sem-4') || termLabel.contains('summer') || termLabel.contains('fall');
+      final isSem5 = termLabel.contains('sem-5') || termLabel.contains('winter');
+      if (!isSem4 && !isSem5) continue; // focus on Sem-4/Sem-5 comparison
       courses.add(course);
-      final map = byCourse.putIfAbsent(course, () => {'Summer': null, 'Winter': null});
-      if (isSummer) {
+      final map = byCourse.putIfAbsent(course, () => {'Sem-4': null, 'Sem-5': null});
+      if (isSem4) {
         // keep the most recent per term
-        final existing = map['Summer'];
-        if (existing == null || g.date.isAfter(existing.date)) map['Summer'] = g;
-      } else if (isWinter) {
-        final existing = map['Winter'];
-        if (existing == null || g.date.isAfter(existing.date)) map['Winter'] = g;
+        final existing = map['Sem-4'];
+        if (existing == null || g.date.isAfter(existing.date)) map['Sem-4'] = g;
+      } else if (isSem5) {
+        final existing = map['Sem-5'];
+        if (existing == null || g.date.isAfter(existing.date)) map['Sem-5'] = g;
       }
     }
 
     final palette = _palette(context);
-    final summerColor = palette[0];
-    final winterColor = palette[1];
+    final sem4Color = palette[0];
+    final sem5Color = palette[1];
 
     final sortedCourses = courses.toList()..sort();
     final groups = <BarChartGroupData>[];
     for (var i = 0; i < sortedCourses.length; i++) {
       final course = sortedCourses[i];
-      final entry = byCourse[course] ?? {'Summer': null, 'Winter': null};
-      final summerPct = (entry['Summer']?.percentage ?? 0).toDouble();
-      final winterPct = (entry['Winter']?.percentage ?? 0).toDouble();
+      final entry = byCourse[course] ?? {'Sem-4': null, 'Sem-5': null};
+      final sem4Pct = (entry['Sem-4']?.percentage ?? 0).toDouble();
+      final sem5Pct = (entry['Sem-5']?.percentage ?? 0).toDouble();
       groups.add(
         BarChartGroupData(
           x: i,
           barsSpace: 6,
           barRods: [
             BarChartRodData(
-              toY: summerPct,
+              toY: sem4Pct,
               width: 10,
               borderRadius: BorderRadius.circular(4),
-              color: summerColor,
+              color: sem4Color,
             ),
             BarChartRodData(
-              toY: winterPct,
+              toY: sem5Pct,
               width: 10,
               borderRadius: BorderRadius.circular(4),
-              color: winterColor,
+              color: sem5Color,
             ),
           ],
         ),
@@ -68,7 +68,7 @@ class AssessmentComparisonChart extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          '$assessmentType: Summer vs Winter',
+          '$assessmentType: Sem-4 vs Sem-5',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
@@ -114,7 +114,7 @@ class AssessmentComparisonChart extends StatelessWidget {
                 enabled: true,
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    final term = rodIndex == 0 ? 'Summer' : 'Winter';
+                    final term = rodIndex == 0 ? 'Sem-4' : 'Sem-5';
                     return BarTooltipItem('$term: ${rod.toY.toStringAsFixed(1)}%', const TextStyle());
                   },
                 ),
@@ -127,8 +127,8 @@ class AssessmentComparisonChart extends StatelessWidget {
         Wrap(
           spacing: 8,
           children: [
-            _LegendChip(label: 'Summer', color: summerColor),
-            _LegendChip(label: 'Winter', color: winterColor),
+            _LegendChip(label: 'Sem-4', color: sem4Color),
+            _LegendChip(label: 'Sem-5', color: sem5Color),
           ],
         ),
       ],

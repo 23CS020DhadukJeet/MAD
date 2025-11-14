@@ -121,7 +121,7 @@ class GradeProvider extends ChangeNotifier {
     };
     final courses = courseCodes.keys.toList();
     final types = ['Assignment', 'Midterm', 'Final'];
-    final termLabels = ['Summer 2025', 'Winter 2025'];
+    final termLabels = ['Sem-4 2025', 'Sem-5 2025'];
     final now = DateTime.now();
 
     int _maxForType(String t) {
@@ -171,6 +171,15 @@ class GradeProvider extends ChangeNotifier {
       'SE': 'SE (CSE301)',
       'RM': 'RM (CSE310)',
     };
+    String _renameTerm(String? t) {
+      if (t == null || t.isEmpty) return t ?? '';
+      var result = t;
+      // Case-insensitive replacements preserving year text
+      result = result.replaceAll(RegExp('(?i)fall'), 'Sem-4');
+      result = result.replaceAll(RegExp('(?i)summer'), 'Sem-4');
+      result = result.replaceAll(RegExp('(?i)winter'), 'Sem-5');
+      return result;
+    }
     for (final g in List<Grade>.from(_grades)) {
       final target = mapping[g.courseCode];
       // Only update if it's a known course and not already mapped
@@ -183,15 +192,13 @@ class GradeProvider extends ChangeNotifier {
           obtainedMarks: g.obtainedMarks,
           date: g.date,
           remarks: g.remarks,
-          // Migrate any "Fall" term naming to "Summer" per requirements.
-          term: (g.term != null && g.term!.toLowerCase().contains('fall'))
-              ? g.term!.toLowerCase().replaceFirst('fall', 'summer')
-              : g.term,
+          // Migrate term naming to Sem-4/Sem-5
+          term: _renameTerm(g.term),
           scannedMarksheetPath: g.scannedMarksheetPath,
           reevalDeadline: g.reevalDeadline,
         );
         await updateGrade(updated);
-      } else if (g.term != null && g.term!.toLowerCase().contains('fall')) {
+      } else if (g.term != null) {
         // Even if course code mapping isn't needed, still migrate term naming.
         final updated = Grade(
           id: g.id,
@@ -201,7 +208,7 @@ class GradeProvider extends ChangeNotifier {
           obtainedMarks: g.obtainedMarks,
           date: g.date,
           remarks: g.remarks,
-          term: g.term!.toLowerCase().replaceFirst('fall', 'summer'),
+          term: _renameTerm(g.term),
           scannedMarksheetPath: g.scannedMarksheetPath,
           reevalDeadline: g.reevalDeadline,
         );
