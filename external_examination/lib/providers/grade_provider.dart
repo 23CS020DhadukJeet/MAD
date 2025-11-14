@@ -121,24 +121,40 @@ class GradeProvider extends ChangeNotifier {
     };
     final courses = courseCodes.keys.toList();
     final types = ['Assignment', 'Midterm', 'Final'];
+    final termLabels = ['Summer 2025', 'Winter 2025'];
     final now = DateTime.now();
+
+    int _maxForType(String t) {
+      switch (t) {
+        case 'Midterm':
+          return 30;
+        case 'Final':
+          return 100;
+        case 'Assignment':
+        default:
+          return 10;
+      }
+    }
+
     for (final c in courses) {
-      for (final t in types) {
-        final max = 100;
-        // Above-average between 68 and 88.
-        final obt = 68 + rng.nextInt(21); // 68..88
-        final date = now.subtract(Duration(days: rng.nextInt(30)));
-        final g = Grade(
-          courseCode: courseCodes[c]!,
-          assessmentType: t,
-          maxMarks: max,
-          obtainedMarks: obt,
-          date: date,
-          term: 'Fall 2025',
-          remarks: obt >= 80 ? 'Good performance' : 'Above average',
-          reevalDeadline: rng.nextBool() ? now.add(Duration(days: 20 + rng.nextInt(20))) : null,
-        );
-        await addGrade(g);
+      for (final term in termLabels) {
+        for (final t in types) {
+          final max = _maxForType(t);
+          // Generate obtained marks scaled to the max (roughly 60%..90%).
+          final obt = (max * (0.6 + rng.nextDouble() * 0.3)).round();
+          final date = now.subtract(Duration(days: rng.nextInt(40)));
+          final g = Grade(
+            courseCode: courseCodes[c]!,
+            assessmentType: t,
+            maxMarks: max,
+            obtainedMarks: obt,
+            date: date,
+            term: term,
+            remarks: obt >= (0.8 * max).round() ? 'Good performance' : 'Above average',
+            reevalDeadline: rng.nextBool() ? now.add(Duration(days: 20 + rng.nextInt(20))) : null,
+          );
+          await addGrade(g);
+        }
       }
     }
   }
@@ -167,7 +183,25 @@ class GradeProvider extends ChangeNotifier {
           obtainedMarks: g.obtainedMarks,
           date: g.date,
           remarks: g.remarks,
-          term: g.term,
+          // Migrate any "Fall" term naming to "Summer" per requirements.
+          term: (g.term != null && g.term!.toLowerCase().contains('fall'))
+              ? g.term!.toLowerCase().replaceFirst('fall', 'summer')
+              : g.term,
+          scannedMarksheetPath: g.scannedMarksheetPath,
+          reevalDeadline: g.reevalDeadline,
+        );
+        await updateGrade(updated);
+      } else if (g.term != null && g.term!.toLowerCase().contains('fall')) {
+        // Even if course code mapping isn't needed, still migrate term naming.
+        final updated = Grade(
+          id: g.id,
+          courseCode: g.courseCode,
+          assessmentType: g.assessmentType,
+          maxMarks: g.maxMarks,
+          obtainedMarks: g.obtainedMarks,
+          date: g.date,
+          remarks: g.remarks,
+          term: g.term!.toLowerCase().replaceFirst('fall', 'summer'),
           scannedMarksheetPath: g.scannedMarksheetPath,
           reevalDeadline: g.reevalDeadline,
         );

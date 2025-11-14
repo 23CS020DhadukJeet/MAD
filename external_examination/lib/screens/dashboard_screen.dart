@@ -7,6 +7,7 @@ import '../widgets/grade_chart.dart';
 import '../widgets/aggregate_chart.dart';
 import '../widgets/deadline_countdown.dart';
 import '../models/grade.dart';
+import '../widgets/assessment_comparison_chart.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -88,6 +89,41 @@ class DashboardScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: AggregateCourseChart(seriesByCourse: _courseGroups(p)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Assessment Comparisons',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: AssessmentComparisonChart(
+                grades: p.grades,
+                assessmentType: 'Assignment',
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: AssessmentComparisonChart(
+                grades: p.grades,
+                assessmentType: 'Midterm',
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: AssessmentComparisonChart(
+                grades: p.grades,
+                assessmentType: 'Final',
+              ),
             ),
           ),
         ],

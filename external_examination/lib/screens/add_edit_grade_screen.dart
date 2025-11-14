@@ -23,6 +23,18 @@ class _AddEditGradeScreenState extends State<AddEditGradeScreen> {
   DateTime? _deadline;
   String? _filePath;
 
+  int _defaultMaxForType(String t) {
+    switch (t) {
+      case 'Midterm':
+        return 30;
+      case 'Final':
+        return 100;
+      case 'Assignment':
+      default:
+        return 10;
+    }
+  }
+
   @override
   void dispose() {
     _courseCtrl.dispose();
@@ -35,6 +47,10 @@ class _AddEditGradeScreenState extends State<AddEditGradeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure the max field reflects the selected assessment type by default.
+    if (_maxCtrl.text.isEmpty) {
+      _maxCtrl.text = _defaultMaxForType(_assessment).toString();
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -63,7 +79,10 @@ class _AddEditGradeScreenState extends State<AddEditGradeScreen> {
                   child: Text('Assignment'),
                 ),
               ],
-              onChanged: (v) => setState(() => _assessment = v ?? 'Midterm'),
+              onChanged: (v) => setState(() {
+                _assessment = v ?? 'Midterm';
+                _maxCtrl.text = _defaultMaxForType(_assessment).toString();
+              }),
               decoration: const InputDecoration(labelText: 'Assessment Type'),
             ),
             const SizedBox(height: 8),
@@ -92,6 +111,8 @@ class _AddEditGradeScreenState extends State<AddEditGradeScreen> {
                     validator: (v) {
                       final n = int.tryParse(v ?? '');
                       if (n == null || n < 0) return 'Enter valid';
+                      final max = int.tryParse(_maxCtrl.text) ?? _defaultMaxForType(_assessment);
+                      if (n > max) return 'Cannot exceed max ($max)';
                       return null;
                     },
                   ),
@@ -102,7 +123,7 @@ class _AddEditGradeScreenState extends State<AddEditGradeScreen> {
             TextFormField(
               controller: _termCtrl,
               decoration: const InputDecoration(
-                labelText: 'Term/Semester (e.g., Fall 2025)',
+                labelText: 'Term/Semester (e.g., Summer 2025 or Winter 2025)',
               ),
             ),
             const SizedBox(height: 8),

@@ -36,8 +36,38 @@ class GradeChart extends StatelessWidget {
       BarChartData(
         minY: 0,
         maxY: 100,
-        titlesData: const FlTitlesData(show: false),
-        gridData: const FlGridData(show: false),
+        titlesData: FlTitlesData(
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 32,
+              getTitlesWidget: (value, meta) {
+                final i = value.toInt();
+                if (i >= 0 && i < sorted.length) {
+                  final label = sorted[i].assessmentType;
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(label, style: const TextStyle(fontSize: 10)),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 36,
+              interval: 20,
+              getTitlesWidget: (value, meta) {
+                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10));
+              },
+            ),
+          ),
+        ),
+        gridData: const FlGridData(show: true, drawVerticalLine: false, horizontalInterval: 20),
         borderData: FlBorderData(show: false),
         groupsSpace: 8,
         barTouchData: BarTouchData(

@@ -31,18 +31,39 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
           scaffoldBackgroundColor: const Color(0xFFF7F8FA),
-          appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0),
-          cardTheme: CardThemeData(
+          appBarTheme: AppBarTheme(
+            centerTitle: false,
             elevation: 0,
+            backgroundColor: Colors.white,
+            foregroundColor: colorSeed,
+            titleTextStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          cardTheme: CardThemeData(
+            elevation: 1,
             color: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            shadowColor: Colors.black12,
           ),
           inputDecorationTheme: InputDecorationTheme(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
             fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          ),
+          filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              textStyle: const TextStyle(fontWeight: FontWeight.w600),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
           ),
           chipTheme: ChipThemeData(
             shape: RoundedRectangleBorder(
